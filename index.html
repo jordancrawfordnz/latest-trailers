@@ -7,17 +7,19 @@
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="http://www.youtube.com/player_api"></script>
 
 <script>
-  var prefix = "https://api.themoviedb.org/3/";
-  var apiKey = "8f9dc61dae4de5e1d69cf48ab6be2c64";
+  var prefix = 'https://api.themoviedb.org/3/';
+  var apiKey = '8f9dc61dae4de5e1d69cf48ab6be2c64';
+  var player;
 
   function getQueryString() {
     return '?api_key=' + apiKey + '&language=en-US';
   }
 
   function getUpcomingMovies(onDone, onFailure) {
-    var command = 'movie/upcoming';
+    var command = 'movie/now_playing';
     var url = prefix + command + getQueryString() + '&page=1';
 
     var request = $.get(url);
@@ -38,22 +40,49 @@
     request.fail(onFailure);
   }
 
-  function showVideo(video) {
-    $('#trailer-container').append(
-      '<iframe height="100%" width="100%"' +
-      'src="https://www.youtube.com/embed/' + video.key + '?modestbranding=1&amp;fs=0&amp;rel=0&amp;hd=1&amp;disablekb=0&amp;showinfo=0&amp;iv_load_policy=0&amp;autoplay=1&amp;loop=0&amp;controls=0"' +
-      'frameborder="0" allowfullscreen></iframe>');
+  function setupPlayer(onReady) {
+    player = new YT.Player('trailer-container', {
+      height: '100%',
+      width: '100%',
+      playerVars: {
+        controls: 0,
+        disablekb: 1,
+        iv_load_policy: 3,
+        modestbranding: 1,
+        showinfo: 0
+      },
+      events: {
+        onReady: onReady,
+      }
+    });
+  };
+
+  function playRandomTrailer(movies) {
+    var randomMovieIndex = Math.round(Math.random() * movies.length);
+    var randomMovie = movies[randomMovieIndex];
+
+    getVideos(randomMovie, function(videos) {
+      // TODO: Find one that is of type "Tralier" and the biggest size possible.
+      var video = videos[0];
+      player.loadVideoById(video.key);
+
+      player.addEventListener('onStateChange', function(event) {
+        if (event.data == YT.PlayerState.ENDED) {
+          // Play the next one.
+          playRandomTrailer(movies);
+        }
+      });
+    });
   }
 
-  getUpcomingMovies(function(upcomingMovies) {
-    if (upcomingMovies.length > 0) {
-      var randomMovieIndex = Math.round(Math.random() * upcomingMovies.length);
-      var randomMovie = upcomingMovies[randomMovieIndex];
-
-      getVideos(randomMovie, function(videos) {
-        showVideo(videos[0]);
+  $(window).on('load', function() {
+    setupPlayer(function() {
+      getUpcomingMovies(function(upcomingMovies) {
+        if (upcomingMovies.length > 0) {
+          playRandomTrailer(upcomingMovies);
+        }
       });
-    }
+    });
   });
 </script>
 
