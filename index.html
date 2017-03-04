@@ -1,0 +1,62 @@
+<style>
+  body {
+    background-color: black;
+    font-family: sans-serif;
+    color: white;
+  }
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<script>
+  var prefix = "https://api.themoviedb.org/3/";
+  var apiKey = "8f9dc61dae4de5e1d69cf48ab6be2c64";
+
+  function getQueryString() {
+    return '?api_key=' + apiKey + '&language=en-US';
+  }
+
+  function getUpcomingMovies(onDone, onFailure) {
+    var command = 'movie/upcoming';
+    var url = prefix + command + getQueryString() + '&page=1';
+
+    var request = $.get(url);
+    request.done(function(response) {
+      onDone(response.results);
+    });
+    request.fail(onFailure);
+  }
+
+  function getVideos(movie, onDone, onFailure) {
+    var command = 'movie/' + movie.id + '/videos';
+    var url = prefix + command + getQueryString();
+
+    var request = $.get(url);
+    request.done(function(response) {
+      onDone(response.results);
+    });
+    request.fail(onFailure);
+  }
+
+  function showVideo(video) {
+    $('#trailer-container').append(
+      '<iframe height="100%" width="100%"' +
+      'src="https://www.youtube.com/embed/' + video.key + '?modestbranding=1&amp;fs=0&amp;rel=0&amp;hd=1&amp;disablekb=0&amp;showinfo=0&amp;iv_load_policy=0&amp;autoplay=1&amp;loop=0&amp;controls=0"' +
+      'frameborder="0" allowfullscreen></iframe>');
+  }
+
+  getUpcomingMovies(function(upcomingMovies) {
+    if (upcomingMovies.length > 0) {
+      var randomMovieIndex = Math.round(Math.random() * upcomingMovies.length);
+      var randomMovie = upcomingMovies[randomMovieIndex];
+
+      getVideos(randomMovie, function(videos) {
+        showVideo(videos[0]);
+      });
+    }
+  });
+</script>
+
+<title>Latest Trailers</title>
+
+<div id="trailer-container"></div>
