@@ -1,0 +1,9 @@
+body {
+  background-color: black;
+  font-family: sans-serif;
+  color: white;
+}
+
+#trailerContainer {
+  height: calc(100% - 64px);
+}

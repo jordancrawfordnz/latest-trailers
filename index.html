@@ -1,16 +1,9 @@
 <head>
   <title>Latest Trailers</title>
 
-  <style>
-    body {
-      background-color: black;
-      font-family: sans-serif;
-      color: white;
-    }
-  </style>
-
   <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css" />
+  <link rel="stylesheet" href="assets/style.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 </head>
 
@@ -29,103 +22,11 @@
     </div>
   </nav>
 
-
-  <div id="trailerContainer"></div>
+  <div id="trailerContainer">
+    <div id="trailer"></div>
+  </div>
 </body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="http://www.youtube.com/player_api"></script>
-
-<script>
-  var prefix = 'https://api.themoviedb.org/3/';
-  var apiKey = '8f9dc61dae4de5e1d69cf48ab6be2c64';
-  var player;
-  var movies;
-
-  function getQueryString() {
-    return '?api_key=' + apiKey + '&language=en-US';
-  }
-
-  function nowShowing() {
-    var url = prefix + 'movie/now_playing' + getQueryString() + '&page=1';
-    var request = $.get(url);
-
-    request.done(function(response) {
-      movies = response.results;
-      playRandomTrailer();
-    });
-    setActiveNavigation('nowShowingNav');
-  }
-
-  function upcoming() {
-    var url = prefix + 'movie/upcoming' + getQueryString() + '&page=1';
-    var request = $.get(url);
-
-    request.done(function(response) {
-      movies = response.results;
-      playRandomTrailer();
-    });
-    setActiveNavigation('upcomingNav');
-  }
-
-  function setActiveNavigation(activeType) {
-    var activeClass = 'active';
-    $('.trailerType').removeClass(activeClass);
-    $('#' + activeType).addClass(activeClass);
-  }
-
-  function getVideos(movie, onDone, onFailure) {
-    var command = 'movie/' + movie.id + '/videos';
-    var url = prefix + command + getQueryString();
-
-    var request = $.get(url);
-    request.done(function(response) {
-      onDone(response.results);
-    });
-    request.fail(onFailure);
-  }
-
-  function setupPlayer(onReady) {
-    player = new YT.Player('trailerContainer', {
-      height: '100%',
-      width: '100%',
-      playerVars: {
-        controls: 1,
-        disablekb: 1,
-        iv_load_policy: 3,
-        modestbranding: 1,
-        showinfo: 0
-      },
-      events: {
-        onReady: onReady,
-      }
-    });
-  };
-
-  function playRandomTrailer() {
-    if (movies.length > 0) {
-      var randomMovieIndex = Math.round(Math.random() * movies.length);
-      console.log(randomMovieIndex);
-      var randomMovie = movies[randomMovieIndex];
-
-      getVideos(randomMovie, function(videos) {
-        // TODO: Find one that is of type "Tralier" and the biggest size possible.
-        var video = videos[0];
-        player.loadVideoById(video.key);
-
-        player.addEventListener('onStateChange', function(event) {
-          if (event.data == YT.PlayerState.ENDED) {
-            // Play the next one.
-            playRandomTrailer();
-          }
-        });
-      });
-    }
-  }
-
-  $(window).on('load', function() {
-    setupPlayer(function() {
-      upcoming();
-    });
-  });
-</script>
+<script src="assets/script.js"></script>
