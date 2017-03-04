@@ -1,10 +1,37 @@
-<style>
-  body {
-    background-color: black;
-    font-family: sans-serif;
-    color: white;
-  }
-</style>
+<head>
+  <title>Latest Trailers</title>
+
+  <style>
+    body {
+      background-color: black;
+      font-family: sans-serif;
+      color: white;
+    }
+  </style>
+
+  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+
+<body>
+  <nav>
+    <div class="nav-wrapper deep-orange darken-4">
+      <div class="hide-on-med-and-down brand-logo center">Latest Trailers</div>
+        <!-- TODO: Use a real logo -->
+      <ul class="left">
+        <li class="trailerType" id="upcomingNav"><a onclick="upcoming()"><i class="material-icons left">movie</i>Upcoming</a></li>
+        <li class="trailerType" id="nowShowingNav"><a onclick="nowShowing()"><i class="material-icons left">theaters</i>Now Showing</a></li>
+      </ul>
+      <ul class="right">
+        <li><a onclick="playRandomTrailer()"><i class="material-icons right">skip_next</i>Next</a></li>
+      </ul>
+    </div>
+  </nav>
+
+
+  <div id="trailerContainer"></div>
+</body>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="http://www.youtube.com/player_api"></script>
@@ -13,20 +40,38 @@
   var prefix = 'https://api.themoviedb.org/3/';
   var apiKey = '8f9dc61dae4de5e1d69cf48ab6be2c64';
   var player;
+  var movies;
 
   function getQueryString() {
     return '?api_key=' + apiKey + '&language=en-US';
   }
 
-  function getUpcomingMovies(onDone, onFailure) {
-    var command = 'movie/now_playing';
-    var url = prefix + command + getQueryString() + '&page=1';
-
+  function nowShowing() {
+    var url = prefix + 'movie/now_playing' + getQueryString() + '&page=1';
     var request = $.get(url);
+
     request.done(function(response) {
-      onDone(response.results);
+      movies = response.results;
+      playRandomTrailer();
     });
-    request.fail(onFailure);
+    setActiveNavigation('nowShowingNav');
+  }
+
+  function upcoming() {
+    var url = prefix + 'movie/upcoming' + getQueryString() + '&page=1';
+    var request = $.get(url);
+
+    request.done(function(response) {
+      movies = response.results;
+      playRandomTrailer();
+    });
+    setActiveNavigation('upcomingNav');
+  }
+
+  function setActiveNavigation(activeType) {
+    var activeClass = 'active';
+    $('.trailerType').removeClass(activeClass);
+    $('#' + activeType).addClass(activeClass);
   }
 
   function getVideos(movie, onDone, onFailure) {
@@ -41,11 +86,11 @@
   }
 
   function setupPlayer(onReady) {
-    player = new YT.Player('trailer-container', {
+    player = new YT.Player('trailerContainer', {
       height: '100%',
       width: '100%',
       playerVars: {
-        controls: 0,
+        controls: 1,
         disablekb: 1,
         iv_load_policy: 3,
         modestbranding: 1,
@@ -57,35 +102,30 @@
     });
   };
 
-  function playRandomTrailer(movies) {
-    var randomMovieIndex = Math.round(Math.random() * movies.length);
-    var randomMovie = movies[randomMovieIndex];
+  function playRandomTrailer() {
+    if (movies.length > 0) {
+      var randomMovieIndex = Math.round(Math.random() * movies.length);
+      console.log(randomMovieIndex);
+      var randomMovie = movies[randomMovieIndex];
 
-    getVideos(randomMovie, function(videos) {
-      // TODO: Find one that is of type "Tralier" and the biggest size possible.
-      var video = videos[0];
-      player.loadVideoById(video.key);
+      getVideos(randomMovie, function(videos) {
+        // TODO: Find one that is of type "Tralier" and the biggest size possible.
+        var video = videos[0];
+        player.loadVideoById(video.key);
 
-      player.addEventListener('onStateChange', function(event) {
-        if (event.data == YT.PlayerState.ENDED) {
-          // Play the next one.
-          playRandomTrailer(movies);
-        }
+        player.addEventListener('onStateChange', function(event) {
+          if (event.data == YT.PlayerState.ENDED) {
+            // Play the next one.
+            playRandomTrailer();
+          }
+        });
       });
-    });
+    }
   }
 
   $(window).on('load', function() {
     setupPlayer(function() {
-      getUpcomingMovies(function(upcomingMovies) {
-        if (upcomingMovies.length > 0) {
-          playRandomTrailer(upcomingMovies);
-        }
-      });
+      upcoming();
     });
   });
 </script>
-
-<title>Latest Trailers</title>
-
-<div id="trailer-container"></div>
