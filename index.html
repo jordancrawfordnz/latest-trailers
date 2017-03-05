@@ -13,17 +13,57 @@
       <div class="hide-on-med-and-down brand-logo center">Latest Trailers</div>
         <!-- TODO: Use a real logo -->
       <ul class="left">
-        <li class="trailerType" id="upcomingNav"><a onclick="upcoming()"><i class="material-icons left">movie</i>Upcoming</a></li>
-        <li class="trailerType" id="nowShowingNav"><a onclick="nowShowing()"><i class="material-icons left">theaters</i>Now Showing</a></li>
+        <li class="navigationItem" id="upcomingNav"><a href="#/upcoming/"><i class="material-icons left">movie</i>Upcoming</a></li>
+        <li class="navigationItem" id="nowShowingNav"><a href="#/now-showing/"><i class="material-icons left">theaters</i>Now Showing</a></li>
       </ul>
       <ul class="right">
-        <li><a onclick="playRandomTrailer()"><i class="material-icons right">skip_next</i>Next</a></li>
+        <li class="navigationItem" id="aboutNav"><a href="#/about/"><i class="material-icons right">info_outline</i>About</a></li>
+        <li id="playNextNav"><a onclick="playRandomTrailer()"><i class="material-icons right">skip_next</i>Next</a></li>
+        <li id="resetSeenTrailersNav" style="display: none;"><a onclick="resetSeenTrailers()"><i class="material-icons right">loop</i>Start again</a></li>
       </ul>
     </div>
   </nav>
 
-  <div id="trailerContainer">
+  <div id="onNoRemainingTrailers" class="valign-wrapper center" style="display: none;">
+    <div class="valign center-block">
+      <h3>You're all caught up!</h3>
+      <h5>Check back another time to watch some more.</h5>
+    </div>
+  </div>
+
+  <div id="trailerContainer" style="display: none;">
     <div id="trailer"></div>
+  </div>
+
+  <div id="about" style="display: none;">
+    <div class="container">
+      <h2>About</h2>
+      <h4>What is this?</h4>
+      <p>
+        I wanted to build something that is as close to the experience of watching movie trailers before a movie starts.
+        Just like in the cinemas, you don't even know what the movie is called until the title is revealed at the end!
+      </p>
+      <p>
+        Your browser keeps track of which trailers you've seen, so if you come back another time, rest assured you'll see something new!
+      </p>
+
+      <h4>How does it know which trailers I've watched?</h4>
+      <p>
+        Information about which trailers you've watched is stored in your browsers local storage.
+        No information about what you watched is avaliable to the owner of this website.
+      </p>
+
+      <h4>Where is content sourced from?</h4>
+      <p>
+        Movie information is sourced from <a href="https://www.themoviedb.org/">TMDb's</a> API.
+        They have information about the trailers avaliable for a movie.</p>
+      <p>Trailers play direct from YouTube.</p>
+
+      <h4>Who made this?</h4>
+      <p>
+        This site was made by <a href="https://jordancrawford.kiwi">Jordan Crawford</a>.
+      </p>
+    </div>
   </div>
 </body>
 

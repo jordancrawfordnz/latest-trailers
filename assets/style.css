@@ -4,6 +4,6 @@ body {
   color: white;
 }
 
-#trailerContainer {
+#trailerContainer, #onNoRemainingTrailers {
   height: calc(100% - 64px);
 }
