@@ -7,3 +7,11 @@ body {
 #trailerContainer, #onNoRemainingTrailers {
   height: calc(100% - 64px);
 }
+
+.nav-wrapper {
+  border-bottom: 1px solid #464646;
+}
+
+nav ul li.active, nav ul a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
