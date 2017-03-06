@@ -73,7 +73,6 @@ function setupPlayer(onReady) {
     width: '100%',
     playerVars: {
       controls: 0,
-      disablekb: 1,
       iv_load_policy: 3,
       modestbranding: 1,
       showinfo: 0,
