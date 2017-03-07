@@ -9,7 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "jsonfile": "^2.4.0",
     "moviedb": "^0.2.7",
-    "promise": "^7.1.1"
+    "promise": "^7.1.1",
+    "s3": "^4.4.0",
+    "tmp": "0.0.31"
   }
 }
