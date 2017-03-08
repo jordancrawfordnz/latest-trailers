@@ -86,7 +86,8 @@ function uploadToS3(file, filePath) {
       localFile: file.name,
       s3Params: {
         Bucket: 'latesttrailerstest',
-        Key: filePath
+        Key: filePath,
+        ContentType: 'application/json'
       }
     };
 
