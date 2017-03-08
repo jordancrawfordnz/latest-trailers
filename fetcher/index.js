@@ -119,7 +119,7 @@ function uploadTrailerDetails(queryFunction, filename) {
 
 
 uploadTrailerDetails(upcomingMovies, 'upcoming.json').then(function() {
-  return uploadTrailerDetails(nowPlayingMovies, 'now-playing.json').then(function() {
+  return uploadTrailerDetails(nowPlayingMovies, 'now-showing.json').then(function() {
     console.log('Fetch completed.');
   });
 }, function(error) {

@@ -1,8 +1,6 @@
-var prefix = 'https://api.themoviedb.org/3/';
-var apiKey = '8f9dc61dae4de5e1d69cf48ab6be2c64';
 var player;
 var movies;
-var seenTrailers;
+var seenMovies;
 
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
@@ -13,27 +11,23 @@ Storage.prototype.getObject = function(key) {
     return value && JSON.parse(value);
 }
 
-function getQueryString() {
-  return '?api_key=' + apiKey + '&language=en-US';
-}
-
 function nowShowing() {
-  var url = prefix + 'movie/now_playing' + getQueryString() + '&page=1';
+  var url = 'now-showing.json';
   var request = $.get(url);
 
   request.done(function(response) {
-    movies = response.results;
+    movies = response;
     playRandomTrailer();
   });
   setActiveNavigation('nowShowingNav');
 }
 
 function upcoming() {
-  var url = prefix + 'movie/upcoming' + getQueryString() + '&page=1';
+  var url = 'upcoming.json';
   var request = $.get(url);
 
   request.done(function(response) {
-    movies = response.results;
+    movies = response;
     playRandomTrailer();
   });
   setActiveNavigation('upcomingNav');
@@ -45,8 +39,8 @@ function about() {
   setDisplayState('about');
 };
 
-function resetSeenTrailers() {
-  seenTrailers = [];
+function resetSeenMovies() {
+  seenMovies = [];
   playRandomTrailer();
 }
 
@@ -54,17 +48,6 @@ function setActiveNavigation(activeType) {
   var activeClass = 'active';
   $('.navigationItem').removeClass(activeClass);
   $('#' + activeType).addClass(activeClass);
-}
-
-function getVideos(movie, onDone, onFailure) {
-  var command = 'movie/' + movie.id + '/videos';
-  var url = prefix + command + getQueryString();
-
-  var request = $.get(url);
-  request.done(function(response) {
-    onDone(response.results);
-  });
-  request.fail(onFailure);
 }
 
 function setupPlayer(onReady) {
@@ -84,9 +67,9 @@ function setupPlayer(onReady) {
   });
 }
 
-function unseenTrailers() {
+function unseenMovies() {
   return $.grep(movies, function(movie) {
-    return seenTrailers.indexOf(movie.id) === -1
+    return seenMovies.indexOf(movie.movieId) === -1
   });
 }
 
@@ -94,10 +77,10 @@ function setDisplayState(state) {
   var trailerElement = $('#trailerContainer');
   var noRemainingTrailersElement = $('#onNoRemainingTrailers');
   var playNextNavElement = $('#playNextNav');
-  var resetSeenTrailersNavElement = $('#resetSeenTrailersNav');
+  var resetSeenMoviesNavElement = $('#resetSeenMoviesNav');
   var aboutElement = $('#about');
 
-  var elements = [trailerElement, noRemainingTrailersElement, playNextNavElement, resetSeenTrailersNavElement, aboutElement];
+  var elements = [trailerElement, noRemainingTrailersElement, playNextNavElement, resetSeenMoviesNavElement, aboutElement];
 
   var show;
   if (state === 'about') {
@@ -105,7 +88,7 @@ function setDisplayState(state) {
   } else if (state === 'trailer') {
     show = [trailerElement, playNextNavElement];
   } else if (state === 'none-remaining') {
-    show = [noRemainingTrailersElement, resetSeenTrailersNavElement];
+    show = [noRemainingTrailersElement, resetSeenMoviesNavElement];
   }
 
   $.each(elements, function(index, element) {
@@ -118,28 +101,27 @@ function setDisplayState(state) {
 }
 
 function playRandomTrailer() {
-  var trailers = unseenTrailers();
+  var movies = unseenMovies();
 
   player.pauseVideo();
 
-  if (trailers.length > 0) {
+  if (movies.length > 0) {
     setDisplayState('trailer');
 
-    var randomMovieIndex = Math.trunc(Math.random() * trailers.length);
-    var randomMovie = trailers[randomMovieIndex];
+    var movieIndex = Math.trunc(Math.random() * movies.length);
+    var movie = movies[movieIndex];
 
-    getVideos(randomMovie, function(videos) {
-      // TODO: Find one that is of type "Tralier" and the biggest size possible.
-      var video = videos[0];
-      player.loadVideoById(video.key);
-      markTrailerAsSeen(randomMovie);
+    var trailerIndex = Math.trunc(Math.random() * movie.trailerKeys.length);
+    var trailerKey = movie.trailerKeys[trailerIndex];
 
-      player.addEventListener('onStateChange', function(event) {
-        if (event.data == YT.PlayerState.ENDED) {
-          // Play the next one.
-          playRandomTrailer();
-        }
-      });
+    player.loadVideoById(trailerKey);
+    markTrailerAsSeen(movie);
+
+    player.addEventListener('onStateChange', function(event) {
+      if (event.data == YT.PlayerState.ENDED) {
+        // Play the next one.
+        playRandomTrailer();
+      }
     });
   } else {
     setDisplayState('none-remaining');
@@ -147,8 +129,8 @@ function playRandomTrailer() {
 }
 
 function markTrailerAsSeen(movie) {
-  seenTrailers.push(movie.id);
-  localStorage.setObject('seenTrailers', seenTrailers);
+  seenMovies.push(movie.movieId);
+  localStorage.setObject('seenMovies', seenMovies);
 }
 
 function onRouteChange() {
@@ -167,7 +149,7 @@ function onRouteChange() {
 window.onhashchange = onRouteChange;
 
 $(window).on('load', function() {
-  seenTrailers = localStorage.getObject('seenTrailers') || [];
+  seenMovies = localStorage.getObject('seenMovies') || [];
   setupPlayer(function() {
     onRouteChange();
   });
