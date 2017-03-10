@@ -10,6 +10,6 @@
   },
   "scripts": {
     "deployPreprod": "s3-deploy '{index.html,assets/**}' --region ap-southeast-2 --bucket latesttrailerstest",
-    "deploy": "s3-deploy '{index.html,assets/**}' --region us-east-2 --bucket latesttrailers.net"
+    "deploy": "s3-deploy '{index.html,assets/**}' --region us-west-1 --bucket latesttrailers.net"
   }
 }

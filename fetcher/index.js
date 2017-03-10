@@ -1,7 +1,8 @@
 var Promise = require('promise');
-var s3 = require('s3');
+var knox = require('knox');
 var tmp = require('tmp');
-var jsonfile = require('jsonfile')
+var jsonfile = require('jsonfile');
+var moment = require('moment');
 
 const FETCH_VIDEOS_DELAY = 400;
 
@@ -13,22 +14,50 @@ if (process.argv.length !== 3) {
 var envFilePath = process.argv[2];
 var env = jsonfile.readFileSync(envFilePath);
 
-var s3Client = s3.createClient({
-  s3Options: {
-    accessKeyId: env.accessKeyId,
-    secretAccessKey: env.secretAccessKey,
-    region: env.region
-  }
+var s3Client = knox.createClient({
+  key: env.accessKeyId,
+  secret: env.secretAccessKey,
+  bucket: env.bucket,
+  region: env.region
 });
 
 const MovieDB = require('moviedb')(env.tmdbKey);
 
-var upcomingMovies = Promise.denodeify(MovieDB.miscUpcomingMovies.bind(MovieDB));
-var nowPlayingMovies = Promise.denodeify(MovieDB.miscNowPlayingMovies.bind(MovieDB));
 var movieVideos = Promise.denodeify(MovieDB.movieVideos.bind(MovieDB));
+var putFile = Promise.denodeify(s3Client.putFile.bind(s3Client));
 
-function getTrailer(movie) {
-  process.stdout.write('Getting trailer for ' + movie.title + '...');
+function formatDateForTMDB(date) {
+  return date.format('YYYY-MM-DD');
+}
+
+function upcomingMovies() {
+  var releaseDateGreaterThan = formatDateForTMDB(moment());
+
+  return Promise.denodeify(MovieDB.discoverMovie.bind(MovieDB))({
+    'sort_by': 'popularity.desc',
+    'include_adult': false,
+    'primary_release_date.gte': releaseDateGreaterThan,
+    'with_release_type': '2|3',
+    'with_original_language': 'en'
+  });
+}
+
+function nowPlayingMovies() {
+  var releaseDateLessThan = formatDateForTMDB(moment());
+  var releaseDateGreaterThan = formatDateForTMDB(moment().subtract(3, 'months'));
+
+  return Promise.denodeify(MovieDB.discoverMovie.bind(MovieDB))({
+    'sort_by': 'popularity.desc',
+    'include_adult': false,
+    'primary_release_date.gte': releaseDateGreaterThan,
+    'primary_release_date.lte': releaseDateLessThan,
+    'with_release_type': '2|3',
+    'with_original_language': 'en'
+  });
+}
+
+function getTrailersForMovie(movie) {
+  process.stdout.write('Getting trailers for ' + movie.title + '...');
   return movieVideos({ id: movie.id }).then(function(response) {
     process.stdout.write('Done.\n');
 
@@ -58,7 +87,7 @@ function getTrailers(remainingMovies, movieTrailers) {
 
   if (remainingMovies.length > 0) {
     var currentMovie = remainingMovies.shift();
-    return getTrailer(currentMovie).then(function(trailers) {
+    return getTrailersForMovie(currentMovie).then(function(trailers) {
       if (trailers) {
         movieTrailers.push(trailers);
       }
@@ -81,25 +110,8 @@ function loadMovieList(queryFunction) {
 }
 
 function uploadToS3(file, filePath) {
-  return new Promise(function(resolve, reject) {
-    var uploadParams = {
-      localFile: file.name,
-      s3Params: {
-        Bucket: env.bucket,
-        Key: filePath,
-        ContentType: 'application/json'
-      }
-    };
-
-    var uploader = s3Client.uploadFile(uploadParams);
-    uploader.on('error', function(err) {
-      reject(err);
-    });
-
-    uploader.on('end', function() {
-      resolve();
-    });
-  });
+  var headers = { 'Content-Type': 'application/json' };
+  return putFile(file.name, filePath, headers);
 }
 
 function getTempJSON(content) {
