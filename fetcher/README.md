@@ -16,7 +16,8 @@ Build a config file of the format:
   "accessKeyId": "...",
   "secretAccessKey": "...",
   "region": "...",
-  "tmdbKey": "..."
+  "tmdbKey": "...",
+  "bucket": "..."
 }
 ```
 

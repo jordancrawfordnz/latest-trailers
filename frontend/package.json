@@ -9,6 +9,7 @@
     "s3-deploy": "^0.7.3"
   },
   "scripts": {
-    "deploy": "s3-deploy '{index.html,assets/**}' --region ap-southeast-2 --bucket latesttrailerstest"
+    "deployPreprod": "s3-deploy '{index.html,assets/**}' --region ap-southeast-2 --bucket latesttrailerstest",
+    "deploy": "s3-deploy '{index.html,assets/**}' --region us-east-2 --bucket latesttrailers.net"
   }
 }
