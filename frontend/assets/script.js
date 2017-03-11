@@ -129,7 +129,8 @@ function onRouteChange(event) {
   } else if (url === '/about/') {
     about();
   } else {
-    location.hash = '#/upcoming/';
+    history.replaceState(undefined, undefined, "#/upcoming/");
+    upcoming();
   }
 }
 
