@@ -146,11 +146,28 @@ function onRouteChange() {
   }
 }
 
+function showTooltips() {
+  tooltipsShown = localStorage.getObject('tooltipsShown') || {};
+  if (!tooltipsShown.first) {
+    setTimeout(function() {
+      Materialize.toast("This page will remember the trailers you watch so you'll see fresh ones next time. Enjoy!", 4000);
+    }, 2000);
+    tooltipsShown.first = true;
+  } else if (!tooltipsShown.second) {
+    setTimeout(function() {
+      Materialize.toast("Welcome back! Continuing from where you left off...", 4000);
+    }, 2000);
+    tooltipsShown.second = true;
+  }
+  localStorage.setObject('tooltipsShown', tooltipsShown);
+}
+
 window.onhashchange = onRouteChange;
 
 $(window).on('load', function() {
   seenMovies = localStorage.getObject('seenMovies') || [];
   setupPlayer(function() {
     onRouteChange();
+    showTooltips();
   });
 });
