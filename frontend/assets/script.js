@@ -1,6 +1,7 @@
 var player;
 var movies;
 var seenMovies;
+var autoPlayAllowed = true;
 
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
@@ -100,10 +101,16 @@ function setDisplayState(state) {
   });
 }
 
+function playNextButtonPressed() {
+  player.pauseVideo();
+  if (!autoPlayAllowed) {
+    $('#playOverride').hide();
+  }
+  playRandomTrailer();
+}
+
 function playRandomTrailer() {
   var movies = unseenMovies();
-
-  player.pauseVideo();
 
   if (movies.length > 0) {
     setDisplayState('trailer');
@@ -162,6 +169,30 @@ function showTooltips() {
   localStorage.setObject('tooltipsShown', tooltipsShown);
 }
 
+function checkAutoplay() {
+  var promise = document.createElement('video').play();
+
+  if (promise instanceof Promise) {
+    promise.catch(function(error) {
+        // Check if it is the right error
+        if(error.name == 'NotAllowedError') {
+            autoPlayAllowed = false;
+        } else {
+          throw error;
+        }
+    }).then(function() {
+      if (!autoPlayAllowed) {
+        $('#playOverride').show();
+      }
+    });
+  }
+};
+
+function playOverride() {
+  player.playVideo();
+  $('#playOverride').hide();
+};
+
 window.onhashchange = onRouteChange;
 
 $(window).on('load', function() {
@@ -169,5 +200,6 @@ $(window).on('load', function() {
   setupPlayer(function() {
     onRouteChange();
     showTooltips();
+    checkAutoplay();
   });
 });

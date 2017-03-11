@@ -4,13 +4,17 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css" />
   <link rel="stylesheet" href="assets/style.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="Watch the latest movie trailers - just like at the cinemas!" />
   <meta property="og:locale" content="en_US">
   <meta property="og:title" content="Latest Trailers">
   <meta property="og:description" content="Watch the latest movie trailers - just like at the cinemas!">
   <meta property="og:url" content="https://latesttrailers.net/">
   <meta property="og:site_name" content="Latest Trailers">
+
+  <meta name="theme-color" content="black">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
 </head>
 
 <body>
@@ -22,8 +26,8 @@
       </ul>
       <ul class="right">
         <li class="navigationItem" id="aboutNav"><a href="#/about/"><i class="material-icons right">info_outline</i>About</a></li>
-        <li id="playNextNav"><a onclick="playRandomTrailer()"><i class="material-icons right">skip_next</i>Next</a></li>
-        <li id="resetSeenMoviesNav" style="display: none;"><a onclick="resetSeenMovies()"><i class="material-icons right">loop</i>Start again</a></li>
+        <li id="playNextNav"><a href="#" onclick="playNextButtonPressed()"><i class="material-icons right">skip_next</i>Next</a></li>
+        <li id="resetSeenMoviesNav" style="display: none;"><a href="#" onclick="resetSeenMovies()"><i class="material-icons right">loop</i>Start again</a></li>
       </ul>
     </div>
   </nav>
@@ -36,6 +40,11 @@
   </div>
 
   <div id="trailerContainer" style="display: none;">
+    <div id="playOverride" style="display: none;">
+      <button onclick="playOverride()" class="btn btn-large waves-effect waves-light white black-text" type="submit" name="action">Play
+       <i class="material-icons right">play_arrow</i>
+      </button>
+    </div>
     <div id="trailer"></div>
   </div>
 
