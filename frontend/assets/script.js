@@ -40,11 +40,6 @@ function about() {
   setDisplayState('about');
 };
 
-function resetSeenMovies() {
-  seenMovies = [];
-  playRandomTrailer();
-}
-
 function setActiveNavigation(activeType) {
   var activeClass = 'active';
   $('.navigationItem').removeClass(activeClass);
@@ -101,35 +96,20 @@ function setDisplayState(state) {
   });
 }
 
-function playNextButtonPressed() {
-  player.pauseVideo();
-  if (!autoPlayAllowed) {
-    $('#playOverride').hide();
-  }
-  playRandomTrailer();
-}
-
 function playRandomTrailer() {
-  var movies = unseenMovies();
+  var unseenMovieList = unseenMovies();
 
-  if (movies.length > 0) {
+  if (unseenMovieList.length > 0) {
     setDisplayState('trailer');
 
-    var movieIndex = Math.trunc(Math.random() * movies.length);
-    var movie = movies[movieIndex];
+    var movieIndex = Math.trunc(Math.random() * unseenMovieList.length);
+    var movie = unseenMovieList[movieIndex];
 
     var trailerIndex = Math.trunc(Math.random() * movie.trailerKeys.length);
     var trailerKey = movie.trailerKeys[trailerIndex];
 
     player.loadVideoById(trailerKey);
     markTrailerAsSeen(movie);
-
-    player.addEventListener('onStateChange', function(event) {
-      if (event.data == YT.PlayerState.ENDED) {
-        // Play the next one.
-        playRandomTrailer();
-      }
-    });
   } else {
     setDisplayState('none-remaining');
   }
@@ -140,7 +120,7 @@ function markTrailerAsSeen(movie) {
   localStorage.setObject('seenMovies', seenMovies);
 }
 
-function onRouteChange() {
+function onRouteChange(event) {
   var url = location.hash.slice(1) || '/';
   if (url === '/upcoming/') {
     upcoming();
@@ -188,12 +168,27 @@ function checkAutoplay() {
   }
 };
 
-function playOverride() {
+window.onhashchange = onRouteChange;
+
+$('#playNextNav').click(function(event) {
+  event.preventDefault();
+  player.pauseVideo();
+  if (!autoPlayAllowed) {
+    $('#playOverride').hide();
+  }
+  playRandomTrailer();
+});
+
+$('#resetSeenMoviesNav').click(function(event) {
+  event.preventDefault();
+  seenMovies = [];
+  playRandomTrailer();
+});
+
+$('#playOverrideButton').click(function() {
   player.playVideo();
   $('#playOverride').hide();
-};
-
-window.onhashchange = onRouteChange;
+});
 
 $(window).on('load', function() {
   seenMovies = localStorage.getObject('seenMovies') || [];
@@ -201,5 +196,12 @@ $(window).on('load', function() {
     onRouteChange();
     showTooltips();
     checkAutoplay();
+
+    player.addEventListener('onStateChange', function(event) {
+      if (event.data == YT.PlayerState.ENDED) {
+        // Play the next one.
+        playRandomTrailer();
+      }
+    });
   });
 });

@@ -26,8 +26,8 @@
       </ul>
       <ul class="right">
         <li class="navigationItem" id="aboutNav"><a href="#/about/"><i class="material-icons right">info_outline</i>About</a></li>
-        <li id="playNextNav"><a href="#" onclick="playNextButtonPressed()"><i class="material-icons right">skip_next</i>Next</a></li>
-        <li id="resetSeenMoviesNav" style="display: none;"><a href="#" onclick="resetSeenMovies()"><i class="material-icons right">loop</i>Start again</a></li>
+        <li id="playNextNav"><a href="#"><i class="material-icons right">skip_next</i>Next</a></li>
+        <li id="resetSeenMoviesNav" style="display: none;"><a href="#"><i class="material-icons right">loop</i>Start again</a></li>
       </ul>
     </div>
   </nav>
@@ -41,7 +41,7 @@
 
   <div id="trailerContainer" style="display: none;">
     <div id="playOverride" style="display: none;">
-      <button onclick="playOverride()" class="btn btn-large waves-effect waves-light white black-text" type="submit" name="action">Play
+      <button id="playOverrideButton" class="btn btn-large waves-effect waves-light white black-text" type="submit" name="action">Play
        <i class="material-icons right">play_arrow</i>
       </button>
     </div>
