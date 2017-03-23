@@ -3,6 +3,9 @@ var movies;
 var seenMovies;
 var autoPlayAllowed = true;
 
+var CAST_APPLICATION_ID = 'FC515287';
+var NAMESPACE = 'urn:x-cast:net.latesttrailers.chromecast';
+
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
 }
@@ -206,3 +209,35 @@ $(window).on('load', function() {
     });
   });
 });
+
+$("#chromecastButton").click(function(event) {
+  event.preventDefault();
+});
+
+
+function initializeCastApi() {
+  console.log('Cast API initialised.');
+
+  cast.framework.CastContext.getInstance().setOptions({
+    receiverApplicationId: CAST_APPLICATION_ID
+  });
+
+  this.remotePlayer = new cast.framework.RemotePlayer();
+  this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
+  this.remotePlayerController.addEventListener(
+    cast.framework.RemotePlayerEventType.IS_CONNECTED_CHANGED,
+    function() {
+      var movies = unseenMovies();
+      if (movies.length > 0) {
+        var movie = movies[0];
+        var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+
+        if (castSession) {
+          return castSession.sendMessage(NAMESPACE, {
+            movie: movie
+          });
+        }
+      }
+    }
+  );
+};

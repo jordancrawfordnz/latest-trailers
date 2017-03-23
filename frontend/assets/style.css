@@ -29,3 +29,15 @@ nav ul li.active, nav ul a:hover {
   width: 140px;
   height: 60px;
 }
+
+#chromecastButton {
+  --disconnected-color: white;
+  width: 70px;
+  overflow: hidden;
+  height: 100%;
+}
+
+#chromecastButton a button {
+  border: none;
+  background: none;
+}

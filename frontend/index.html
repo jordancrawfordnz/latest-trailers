@@ -25,6 +25,7 @@
         <li class="navigationItem" id="nowShowingNav"><a href="#/now-showing/"><i class="material-icons left">theaters</i>Now Showing</a></li>
       </ul>
       <ul class="right">
+        <li id="chromecastButton"><a href="#"><button is="google-cast-button"></button></a></li>
         <li class="navigationItem" id="aboutNav"><a href="#/about/"><i class="material-icons right">info_outline</i>About</a></li>
         <li id="playNextNav"><a href="#"><i class="material-icons right">skip_next</i>Next</a></li>
         <li id="resetSeenMoviesNav" style="display: none;"><a href="#"><i class="material-icons right">loop</i>Start again</a></li>
@@ -83,6 +84,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
 <script src="https://www.youtube.com/player_api"></script>
+
+<script>
+window['__onGCastApiAvailable'] = function(isAvailable) {
+  if (isAvailable) {
+    initializeCastApi();
+  }
+};
+</script>
+<script type="text/javascript" src="https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1"></script>
+
 <script src="assets/script.js"></script>
 
 <script>
