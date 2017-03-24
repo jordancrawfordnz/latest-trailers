@@ -36,7 +36,6 @@ window.onload = function() {
   console.log('Receiver Manager started');
 
   setupPlayer(function() {
-    console.log('player ready now')
     playerReady = true;
   });
 };
@@ -45,7 +44,6 @@ function playTrailerWhenReady(messageData) {
   if (playerReady) {
     playTrailer(messageData);
   } else {
-    console.log('player not ready');
     setTimeout(function() {
       playTrailerWhenReady(messageData);
     }, 100);
@@ -54,11 +52,10 @@ function playTrailerWhenReady(messageData) {
 
 function playTrailer(messageData) {
   console.log('play trailer called.');
-  if (messageData.movie) {
-    var movie = messageData.movie;
-    player.loadVideoById(movie.trailerKeys[0]);
+  if (messageData.trailerKey) {
+    player.loadVideoById(messageData.trailerKey);
   } else {
-    console.log('no Movie data');
+    console.log('No trailer key provided.');
   }
 }
 

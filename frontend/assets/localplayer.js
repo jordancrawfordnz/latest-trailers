@@ -6,6 +6,15 @@ var LocalPlayer = function(trailerDoneCallback) {
   this._setupPlayer();
 };
 
+LocalPlayer.prototype.makeActive = function() {
+  console.log('Make local player active!');
+    // TODO: Hide/show required elements.
+};
+
+LocalPlayer.prototype.makeInactive = function() {
+  this.pause();
+};
+
 LocalPlayer.prototype.playTrailer = function(trailerKey, fromUserInteraction) {
   // TODO: Accept a player start point as an optional argument (for when changing players.)
   var _this = this;

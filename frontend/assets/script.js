@@ -1,9 +1,8 @@
-var movies;
-var seenMovies;
-
 var CAST_APPLICATION_ID = 'FC515287';
 var NAMESPACE = 'urn:x-cast:net.latesttrailers.chromecast';
 
+var movies;
+var seenMovies;
 var localPlayer;
 var chromecastPlayer;
 var player;
@@ -158,7 +157,7 @@ $(window).on('load', function() {
     // Play the next one.
     playRandomTrailer();
   });
-  player = localPlayer;
+  switchActivePlayer(null, localPlayer);
 
   seenMovies = localStorage.getObject('seenMovies') || [];
   onRouteChange();
@@ -169,7 +168,18 @@ $("#chromecastButton").click(function(event) {
   event.preventDefault();
 });
 
+function switchActivePlayer(from, to) {
+  if (from) {
+    from.makeInactive();
+  }
+
+  to.makeActive();
+  player = to;
+  // TODO: Send through the current video if there is one.
+};
+
 function switchToChromecast() {
+  console.log('Switching to Chromecast.');
   // TODO: Change the view to reflect playback being on the remote player.
     // TODO: Inc. pausing the current local player.
   // TODO: Support sending videos to the chromecast.
@@ -177,26 +187,21 @@ function switchToChromecast() {
   // TODO: Support pausing videos.
   // TODO: Support the finished message.
 
-  var movies = unseenMovies();
-  if (movies.length > 0) {
-    var movie = movies[0];
-    var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
-
-    if (castSession) {
-      return castSession.sendMessage(NAMESPACE, {
-        movie: movie
-      });
-    }
+  if (!chromecastPlayer) {
+    chromecastPlayer = new ChromecastPlayer(function() {
+      playRandomTrailer();
+    });
   }
+
+  switchActivePlayer(localPlayer, chromecastPlayer);
 }
 
 function switchToLocalPlayer() {
+  console.log('Switching to local player.');
   // TODO: Yet to have a way to call this!
 }
 
 function initializeCastApi() {
-  console.log('Cast API initialised.');
-
   cast.framework.CastContext.getInstance().setOptions({
     receiverApplicationId: CAST_APPLICATION_ID
   });
