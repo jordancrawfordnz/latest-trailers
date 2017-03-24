@@ -4,8 +4,12 @@ body {
   color: white;
 }
 
-#trailerContainer, #onNoRemainingTrailers {
+#playerContainer, #onNoRemainingTrailers {
   height: calc(100% - 64px);
+}
+
+#chromecastContainer {
+  height: 100%;
 }
 
 .nav-wrapper {

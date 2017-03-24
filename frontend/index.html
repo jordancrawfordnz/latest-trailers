@@ -40,13 +40,24 @@
     </div>
   </div>
 
-  <div id="trailerContainer" style="display: none;">
-    <div id="playOverride" style="display: none;">
-      <button id="playOverrideButton" class="btn btn-large waves-effect waves-light white black-text" type="submit" name="action">Play
-       <i class="material-icons right">play_arrow</i>
-      </button>
+  <div id="playerContainer" style="display: none;">
+    <div id="localPlayerContainer" style="display: none;">
+      <div id="playOverride" style="display: none;">
+        <button id="playOverrideButton" class="btn btn-large waves-effect waves-light white black-text" type="submit" name="action">Play
+         <i class="material-icons right">play_arrow</i>
+        </button>
+      </div>
+      <div id="trailer"></div>
     </div>
-    <div id="trailer"></div>
+
+    <div id="chromecastContainer" class="valign-wrapper center" style="display: none;">
+      <div class="valign center-block">
+        <h3>Playing on your TV</h3>
+        <h5>Wish you had a pause button?</h5>
+      </div>
+      <!-- TODO: Pause button. -->
+          <!-- TODO: Disconnect button? -->
+    </div>
   </div>
 
   <div id="about" style="display: none;">

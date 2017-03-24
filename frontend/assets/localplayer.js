@@ -6,13 +6,18 @@ var LocalPlayer = function(trailerDoneCallback) {
   this._setupPlayer();
 };
 
+
+LocalPlayer.prototype.currentTrailer = function() {
+  return this.currentlyPlayingTrailer;
+};
+
 LocalPlayer.prototype.makeActive = function() {
-  console.log('Make local player active!');
-    // TODO: Hide/show required elements.
+  $("#localPlayerContainer").show();
 };
 
 LocalPlayer.prototype.makeInactive = function() {
   this.pause();
+  $("#localPlayerContainer").hide();
 };
 
 LocalPlayer.prototype.playTrailer = function(trailerKey, fromUserInteraction) {
@@ -21,9 +26,10 @@ LocalPlayer.prototype.playTrailer = function(trailerKey, fromUserInteraction) {
 
   if (this.playerReady) {
     if (fromUserInteraction) {
-      $('#playOverride').hide();
+      $('#localPlayerContainer').hide();
     }
     this.player.loadVideoById(trailerKey);
+    this.currentlyPlayingTrailer = trailerKey;
   } else {
     setTimeout(function() {
       _this.playTrailer(trailerKey);
@@ -38,7 +44,7 @@ LocalPlayer.prototype.pause = function() {
 };
 
 LocalPlayer.prototype.noRemainingTrailers = function() {
-  // TODO: When playing a trailer, undo the message.
+  this.currentlyPlayingTrailer = null;
 };
 
 LocalPlayer.prototype._onPlayerReady = function() {

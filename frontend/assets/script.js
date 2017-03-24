@@ -57,19 +57,19 @@ function unseenMovies() {
 }
 
 function setDisplayState(state) {
-  var trailerElement = $('#trailerContainer');
+  var playerElement = $('#playerContainer');
   var noRemainingTrailersElement = $('#onNoRemainingTrailers');
   var playNextNavElement = $('#playNextNav');
   var resetSeenMoviesNavElement = $('#resetSeenMoviesNav');
   var aboutElement = $('#about');
 
-  var elements = [trailerElement, noRemainingTrailersElement, playNextNavElement, resetSeenMoviesNavElement, aboutElement];
+  var elements = [playerElement, noRemainingTrailersElement, playNextNavElement, resetSeenMoviesNavElement, aboutElement];
 
   var show;
   if (state === 'about') {
     show = [aboutElement];
   } else if (state === 'trailer') {
-    show = [trailerElement, playNextNavElement];
+    show = [playerElement, playNextNavElement];
   } else if (state === 'none-remaining') {
     show = [noRemainingTrailersElement, resetSeenMoviesNavElement];
   }
@@ -169,13 +169,18 @@ $("#chromecastButton").click(function(event) {
 });
 
 function switchActivePlayer(from, to) {
+  var fromPlayerTrailer;
   if (from) {
     from.makeInactive();
+    fromPlayerTrailer = from.currentTrailer();
   }
 
   to.makeActive();
+  if (fromPlayerTrailer) {
+    to.playTrailer(fromPlayerTrailer);
+  }
+
   player = to;
-  // TODO: Send through the current video if there is one.
 };
 
 function switchToChromecast() {

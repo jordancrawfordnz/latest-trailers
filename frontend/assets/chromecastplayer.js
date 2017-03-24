@@ -4,11 +4,16 @@ var ChromecastPlayer = function(trailerDoneCallback) {
   this.trailerDoneCallback = trailerDoneCallback;
 };
 
+ChromecastPlayer.prototype.currentTrailer = function() {
+  return this.currentlyPlayingTrailer;
+};
+
 ChromecastPlayer.prototype.makeActive = function() {
-  // TODO: Hide/show required elements.
+  $("#chromecastContainer").show();
 };
 
 ChromecastPlayer.prototype.makeInactive = function() {
+  $("#chromecastContainer").hidden();
   this.pause();
 };
 
@@ -20,6 +25,7 @@ ChromecastPlayer.prototype.playTrailer = function(trailerKey, fromUserInteractio
     return castSession.sendMessage(NAMESPACE, {
       trailerKey: trailerKey
     });
+    this.currentlyPlayingTrailer = trailerKey;
   }
 };
 
@@ -31,4 +37,5 @@ ChromecastPlayer.prototype.pause = function() {
 
 ChromecastPlayer.prototype.noRemainingTrailers = function() {
   // TODO: When playing a trailer, undo the message.
+  this.currentlyPlayingTrailer = null;
 };
