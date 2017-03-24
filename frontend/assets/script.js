@@ -84,7 +84,7 @@ function setDisplayState(state) {
   });
 }
 
-function playRandomTrailer() {
+function playRandomTrailer(fromUserInteraction) {
   var unseenMovieList = unseenMovies();
 
   if (unseenMovieList.length > 0) {
@@ -96,7 +96,7 @@ function playRandomTrailer() {
     var trailerIndex = Math.trunc(Math.random() * movie.trailerKeys.length);
     var trailerKey = movie.trailerKeys[trailerIndex];
 
-    player.playTrailer(trailerKey);
+    player.playTrailer(trailerKey, fromUserInteraction);
     markTrailerAsSeen(movie);
   } else {
     setDisplayState('none-remaining');
@@ -143,13 +143,13 @@ window.onhashchange = onRouteChange;
 $('#playNextNav').click(function(event) {
   event.preventDefault();
   player.pause();
-  playRandomTrailer();
+  playRandomTrailer(true);
 });
 
 $('#resetSeenMoviesNav').click(function(event) {
   event.preventDefault();
   seenMovies = [];
-  playRandomTrailer();
+  playRandomTrailer(true);
 });
 
 $(window).on('load', function() {
@@ -190,6 +190,10 @@ function switchToChromecast() {
   }
 }
 
+function switchToLocalPlayer() {
+  // TODO: Yet to have a way to call this!
+}
+
 function initializeCastApi() {
   console.log('Cast API initialised.');
 
@@ -197,6 +201,7 @@ function initializeCastApi() {
     receiverApplicationId: CAST_APPLICATION_ID
   });
 
+  // When connecting to Chromecast, call switchToChromecast.
   this.remotePlayer = new cast.framework.RemotePlayer();
   this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
   this.remotePlayerController.addEventListener(
@@ -204,5 +209,5 @@ function initializeCastApi() {
     switchToChromecast
   );
 
-  // TODO: Add a listener when chromecast disconnects.
+  // TODO: Add a listener when chromecast disconnects to switch back to the local player.
 };

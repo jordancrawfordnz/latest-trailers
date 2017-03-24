@@ -6,12 +6,14 @@ var LocalPlayer = function(trailerDoneCallback) {
   this._setupPlayer();
 };
 
-LocalPlayer.prototype.playTrailer = function(trailerKey) {
+LocalPlayer.prototype.playTrailer = function(trailerKey, fromUserInteraction) {
+  // TODO: Accept a player start point as an optional argument (for when changing players.)
   var _this = this;
 
   if (this.playerReady) {
-    $('#playOverride').hide();
-    // TODO: Accept a player start point as an optional argument (for when changing players.)
+    if (fromUserInteraction) {
+      $('#playOverride').hide();
+    }
     this.player.loadVideoById(trailerKey);
   } else {
     setTimeout(function() {
