@@ -1,10 +1,12 @@
-var player;
 var movies;
 var seenMovies;
-var autoPlayAllowed = true;
 
 var CAST_APPLICATION_ID = 'FC515287';
 var NAMESPACE = 'urn:x-cast:net.latesttrailers.chromecast';
+
+var localPlayer;
+var chromecastPlayer;
+var player;
 
 Storage.prototype.setObject = function(key, value) {
     this.setItem(key, JSON.stringify(value));
@@ -38,7 +40,7 @@ function upcoming() {
 }
 
 function about() {
-  player.pauseVideo();
+  player.pause();
   setActiveNavigation('aboutNav');
   setDisplayState('about');
 };
@@ -47,23 +49,6 @@ function setActiveNavigation(activeType) {
   var activeClass = 'active';
   $('.navigationItem').removeClass(activeClass);
   $('#' + activeType).addClass(activeClass);
-}
-
-function setupPlayer(onReady) {
-  player = new YT.Player('trailer', {
-    height: '100%',
-    width: '100%',
-    playerVars: {
-      controls: 0,
-      iv_load_policy: 3,
-      modestbranding: 1,
-      showinfo: 0,
-      rel: 0
-    },
-    events: {
-      onReady: onReady,
-    }
-  });
 }
 
 function unseenMovies() {
@@ -111,7 +96,7 @@ function playRandomTrailer() {
     var trailerIndex = Math.trunc(Math.random() * movie.trailerKeys.length);
     var trailerKey = movie.trailerKeys[trailerIndex];
 
-    player.loadVideoById(trailerKey);
+    player.playTrailer(trailerKey);
     markTrailerAsSeen(movie);
   } else {
     setDisplayState('none-remaining');
@@ -153,33 +138,11 @@ function showTooltips() {
   localStorage.setObject('tooltipsShown', tooltipsShown);
 }
 
-function checkAutoplay() {
-  var promise = document.createElement('video').play();
-
-  if (promise instanceof Promise) {
-    promise.catch(function(error) {
-        // Check if it is the right error
-        if(error.name == 'NotAllowedError') {
-            autoPlayAllowed = false;
-        } else {
-          throw error;
-        }
-    }).then(function() {
-      if (!autoPlayAllowed) {
-        $('#playOverride').show();
-      }
-    });
-  }
-};
-
 window.onhashchange = onRouteChange;
 
 $('#playNextNav').click(function(event) {
   event.preventDefault();
-  player.pauseVideo();
-  if (!autoPlayAllowed) {
-    $('#playOverride').hide();
-  }
+  player.pause();
   playRandomTrailer();
 });
 
@@ -189,31 +152,43 @@ $('#resetSeenMoviesNav').click(function(event) {
   playRandomTrailer();
 });
 
-$('#playOverrideButton').click(function() {
-  player.playVideo();
-  $('#playOverride').hide();
-});
-
 $(window).on('load', function() {
-  seenMovies = localStorage.getObject('seenMovies') || [];
-  setupPlayer(function() {
-    onRouteChange();
-    showTooltips();
-    checkAutoplay();
-
-    player.addEventListener('onStateChange', function(event) {
-      if (event.data == YT.PlayerState.ENDED) {
-        // Play the next one.
-        playRandomTrailer();
-      }
-    });
+  // Setup the local player.
+  localPlayer = new LocalPlayer(function() {
+    // Play the next one.
+    playRandomTrailer();
   });
+  player = localPlayer;
+
+  seenMovies = localStorage.getObject('seenMovies') || [];
+  onRouteChange();
+  showTooltips();
 });
 
 $("#chromecastButton").click(function(event) {
   event.preventDefault();
 });
 
+function switchToChromecast() {
+  // TODO: Change the view to reflect playback being on the remote player.
+    // TODO: Inc. pausing the current local player.
+  // TODO: Support sending videos to the chromecast.
+    // TODO: Send the currently playing video to the Chromecast, ideally at the current playback point.
+  // TODO: Support pausing videos.
+  // TODO: Support the finished message.
+
+  var movies = unseenMovies();
+  if (movies.length > 0) {
+    var movie = movies[0];
+    var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+
+    if (castSession) {
+      return castSession.sendMessage(NAMESPACE, {
+        movie: movie
+      });
+    }
+  }
+}
 
 function initializeCastApi() {
   console.log('Cast API initialised.');
@@ -226,18 +201,8 @@ function initializeCastApi() {
   this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
   this.remotePlayerController.addEventListener(
     cast.framework.RemotePlayerEventType.IS_CONNECTED_CHANGED,
-    function() {
-      var movies = unseenMovies();
-      if (movies.length > 0) {
-        var movie = movies[0];
-        var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
-
-        if (castSession) {
-          return castSession.sendMessage(NAMESPACE, {
-            movie: movie
-          });
-        }
-      }
-    }
+    switchToChromecast
   );
+
+  // TODO: Add a listener when chromecast disconnects.
 };
