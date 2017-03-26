@@ -26,7 +26,7 @@ LocalPlayer.prototype.playTrailer = function(trailerKey, fromUserInteraction) {
 
   if (this.playerReady) {
     if (fromUserInteraction) {
-      $('#localPlayerContainer').hide();
+      $('#playOverride').hide();
     }
     this.player.loadVideoById(trailerKey);
     this.currentlyPlayingTrailer = trailerKey;
@@ -45,9 +45,11 @@ LocalPlayer.prototype.pause = function() {
 
 LocalPlayer.prototype.noRemainingTrailers = function() {
   this.currentlyPlayingTrailer = null;
+  this.pause();
 };
 
 LocalPlayer.prototype._onPlayerReady = function() {
+  _this = this;
   this._checkAutoplay();
 
   this.player.addEventListener('onStateChange', function(event) {

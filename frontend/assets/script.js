@@ -51,6 +51,8 @@ function setActiveNavigation(activeType) {
 }
 
 function unseenMovies() {
+  if (!movies) return null;
+
   return $.grep(movies, function(movie) {
     return seenMovies.indexOf(movie.movieId) === -1
   });
@@ -99,6 +101,7 @@ function playRandomTrailer(fromUserInteraction) {
     markTrailerAsSeen(movie);
   } else {
     setDisplayState('none-remaining');
+    player.noRemainingTrailers();
   }
 }
 
@@ -176,34 +179,38 @@ function switchActivePlayer(from, to) {
   }
 
   to.makeActive();
-  if (fromPlayerTrailer) {
+
+  var unseenMovieList = unseenMovies();
+  if (unseenMovieList && unseenMovieList.length == 0) {
+    to.noRemainingTrailers();
+  } else if (fromPlayerTrailer) {
     to.playTrailer(fromPlayerTrailer);
   }
 
   player = to;
 };
 
-function switchToChromecast() {
-  console.log('Switching to Chromecast.');
-  // TODO: Change the view to reflect playback being on the remote player.
-    // TODO: Inc. pausing the current local player.
-  // TODO: Support sending videos to the chromecast.
-    // TODO: Send the currently playing video to the Chromecast, ideally at the current playback point.
-  // TODO: Support pausing videos.
-  // TODO: Support the finished message.
-
-  if (!chromecastPlayer) {
-    chromecastPlayer = new ChromecastPlayer(function() {
-      playRandomTrailer();
-    });
-  }
-
-  switchActivePlayer(localPlayer, chromecastPlayer);
+function pause() {
+  player.pause();
 }
 
-function switchToLocalPlayer() {
-  console.log('Switching to local player.');
-  // TODO: Yet to have a way to call this!
+function play() {
+  player.play();
+}
+
+function switchPlayers() {
+  if (cast.framework.CastContext.getInstance().getCurrentSession()) {
+    if (!chromecastPlayer) {
+      chromecastPlayer = new ChromecastPlayer(function() {
+        playRandomTrailer();
+      });
+    }
+    switchActivePlayer(localPlayer, chromecastPlayer);
+  } else {
+    switchActivePlayer(chromecastPlayer, localPlayer);
+  }
+  // TODO: Send the currently playing video to the Chromecast, ideally at the current playback point.
+  // TODO: Support pausing videos.
 }
 
 function initializeCastApi() {
@@ -216,8 +223,6 @@ function initializeCastApi() {
   this.remotePlayerController = new cast.framework.RemotePlayerController(this.remotePlayer);
   this.remotePlayerController.addEventListener(
     cast.framework.RemotePlayerEventType.IS_CONNECTED_CHANGED,
-    switchToChromecast
+    switchPlayers
   );
-
-  // TODO: Add a listener when chromecast disconnects to switch back to the local player.
 };

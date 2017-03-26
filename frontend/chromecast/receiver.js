@@ -6,16 +6,6 @@ window.onload = function() {
   window.castReceiverManager = cast.receiver.CastReceiverManager.getInstance();
   console.log('Starting Receiver Manager');
 
-  castReceiverManager.onReady = function(event) {
-    console.log('Received Ready event: ' + JSON.stringify(event.data));
-    window.castReceiverManager.setApplicationState('Ready to roll!');
-  };
-
-  castReceiverManager.onSenderConnected = function(event) {
-    console.log('Received Sender Connected event: ' + event.data);
-    console.log(window.castReceiverManager.getSender(event.data).userAgent);
-  };
-
   castReceiverManager.onSenderDisconnected = function(event) {
     // Close the app if there are no senders remaining.
     if (window.castReceiverManager.getSenders().length == 0) {
@@ -28,35 +18,50 @@ window.onload = function() {
   window.messageBus.onMessage = function(event) {
     var data = JSON.parse(event.data);
 
-    console.log(data);
-    playTrailerWhenReady(data);
+    // TODO: Support other event types.
+    if (data.caughtUp) {
+      $("#onNoRemainingTrailers").show();
+      $("#trailerContainer").hide();
+      pauseVideo();
+      // TODO: Show the caught up message.
+    } else if (data.trailerKey) {
+      playTrailerWhenReady(data.trailerKey);
+    }
   }
 
-  window.castReceiverManager.start({statusText: 'Application is starting'});
+  // TODO: On no more videos event.
+  // TODO: On pause.
+
   console.log('Receiver Manager started');
+
+  window.castReceiverManager.start();
 
   setupPlayer(function() {
     playerReady = true;
   });
 };
 
-function playTrailerWhenReady(messageData) {
+function pauseVideo() {
   if (playerReady) {
-    playTrailer(messageData);
+    player.pauseVideo();
+  }
+}
+
+function playTrailerWhenReady(trailerKey) {
+  if (playerReady) {
+    $("#onNoRemainingTrailers").hide();
+    $("#trailerContainer").show();
+
+    playTrailer(trailerKey);
   } else {
     setTimeout(function() {
-      playTrailerWhenReady(messageData);
+      playTrailerWhenReady(trailerKey);
     }, 100);
   }
 }
 
-function playTrailer(messageData) {
-  console.log('play trailer called.');
-  if (messageData.trailerKey) {
-    player.loadVideoById(messageData.trailerKey);
-  } else {
-    console.log('No trailer key provided.');
-  }
+function playTrailer(trailerKey) {
+  player.loadVideoById(trailerKey);
 }
 
 function setupPlayer(onReady) {

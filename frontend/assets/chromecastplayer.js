@@ -13,8 +13,7 @@ ChromecastPlayer.prototype.makeActive = function() {
 };
 
 ChromecastPlayer.prototype.makeInactive = function() {
-  $("#chromecastContainer").hidden();
-  this.pause();
+  $("#chromecastContainer").hide();
 };
 
 ChromecastPlayer.prototype.playTrailer = function(trailerKey, fromUserInteraction) {
@@ -22,20 +21,26 @@ ChromecastPlayer.prototype.playTrailer = function(trailerKey, fromUserInteractio
   var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
 
   if (castSession) {
+    this.currentlyPlayingTrailer = trailerKey;
+
     return castSession.sendMessage(NAMESPACE, {
       trailerKey: trailerKey
     });
-    this.currentlyPlayingTrailer = trailerKey;
   }
 };
 
 ChromecastPlayer.prototype.pause = function() {
-  if (this.playerReady) {
-    this.player.pauseVideo();
-  }
+  // TODO: Implement a pause command.
 };
 
 ChromecastPlayer.prototype.noRemainingTrailers = function() {
-  // TODO: When playing a trailer, undo the message.
   this.currentlyPlayingTrailer = null;
+
+  var castSession = cast.framework.CastContext.getInstance().getCurrentSession();
+
+  if (castSession) {
+    return castSession.sendMessage(NAMESPACE, {
+      caughtUp: true
+    });
+  }
 };
