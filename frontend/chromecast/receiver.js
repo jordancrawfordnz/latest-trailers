@@ -23,7 +23,6 @@ window.onload = function() {
       $("#onNoRemainingTrailers").show();
       $("#trailerContainer").hide();
       pauseVideo();
-      // TODO: Show the caught up message.
     } else if (data.trailerKey) {
       playTrailerWhenReady(data.trailerKey);
     }
@@ -31,6 +30,12 @@ window.onload = function() {
 
   // TODO: On no more videos event.
   // TODO: On pause.
+
+  window.mediaManager = new cast.receiver.MediaManager(document.getElementById('trailer'));
+  window.mediaManager.onPause = function() {
+    console.log('on pause called.');
+  };
+    // TODO: Do some other stuff with this so it actually works
 
   console.log('Receiver Manager started');
 
