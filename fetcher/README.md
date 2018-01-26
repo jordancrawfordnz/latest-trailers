@@ -17,9 +17,12 @@ Build a config file of the format:
   "secretAccessKey": "...",
   "region": "...",
   "tmdbKey": "...",
-  "bucket": "..."
+  "bucket": "...",
+  "successPublishUrl": "..."
 }
 ```
+
+Optionally define a `successPublishUrl` to hit a URL after a sucessful fetch.
 
 ## Running
 1. Install Node

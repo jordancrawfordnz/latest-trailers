@@ -3,6 +3,7 @@ var knox = require('knox');
 var tmp = require('tmp');
 var jsonfile = require('jsonfile');
 var moment = require('moment');
+var request = require('request');
 
 const FETCH_VIDEOS_DELAY = 400;
 
@@ -130,10 +131,14 @@ function uploadTrailerDetails(queryFunction, filename) {
   });
 }
 
-
 uploadTrailerDetails(upcomingMovies, 'upcoming.json').then(function() {
   return uploadTrailerDetails(nowPlayingMovies, 'now-showing.json').then(function() {
     console.log('Fetch completed.');
+
+    if (env.successPublishUrl) {
+      console.log('Hitting success URL.');
+      request(env.successPublishUrl);
+    }
   });
 }, function(error) {
   console.log('An error occurred.');
