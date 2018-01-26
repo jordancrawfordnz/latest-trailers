@@ -1,5 +1,5 @@
 var Promise = require('promise');
-var knox = require('knox');
+var S3 = require('aws-sdk/clients/s3');
 var tmp = require('tmp');
 var jsonfile = require('jsonfile');
 var moment = require('moment');
@@ -15,17 +15,16 @@ if (process.argv.length !== 3) {
 var envFilePath = process.argv[2];
 var env = jsonfile.readFileSync(envFilePath);
 
-var s3Client = knox.createClient({
-  key: env.accessKeyId,
-  secret: env.secretAccessKey,
-  bucket: env.bucket,
+var s3Client = new S3({
+  accessKeyId: env.accessKeyId,
+  secretAccessKey: env.secretAccessKey,
   region: env.region
 });
 
 const MovieDB = require('moviedb')(env.tmdbKey);
 
 var movieVideos = Promise.denodeify(MovieDB.movieVideos.bind(MovieDB));
-var putFile = Promise.denodeify(s3Client.putFile.bind(s3Client));
+var putObject = Promise.denodeify(s3Client.putObject.bind(s3Client));
 
 function formatDateForTMDB(date) {
   return date.format('YYYY-MM-DD');
@@ -110,22 +109,20 @@ function loadMovieList(queryFunction) {
   });
 }
 
-function uploadToS3(file, filePath) {
-  var headers = { 'Content-Type': 'application/json' };
-  return putFile(file.name, filePath, headers);
-}
+function uploadToS3(content, filePath) {
+  var params = {
+    Body: JSON.stringify(content),
+    Key: filePath,
+    Bucket: env.bucket,
+    ContentType: 'application/json'
+  };
 
-function getTempJSON(content) {
-  var tempFile = tmp.fileSync();
-  jsonfile.writeFileSync(tempFile.name, content);
-
-  return tempFile;
+  return putObject(params);
 }
 
 function uploadTrailerDetails(queryFunction, filename) {
   return loadMovieList(queryFunction).then(function(trailers) {
-    var file = getTempJSON(trailers);
-    return uploadToS3(file, filename).then(function() {
+    return uploadToS3(trailers, filename).then(function() {
       console.log('Uploaded ' + filename + ' successfully!');
     });
   });
