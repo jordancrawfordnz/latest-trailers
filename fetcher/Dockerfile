@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:8.11.0-slim
 
 MAINTAINER Jordan Crawford <jordan@crawford.kiwi>
 
@@ -6,7 +6,7 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 # Setup packages
-COPY package.json /usr/src/app/
+COPY package.json package-lock.json /usr/src/app/
 RUN npm install
 
 # Setup the app
