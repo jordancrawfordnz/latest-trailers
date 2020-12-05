@@ -11,7 +11,15 @@ Automatically plays the latest / now showing movie trailers.
 - Has an about page with information about the source of the content and other (possible) FAQ's.
 
 ## Deploying
-Run `AWS_ACCESS_KEY_ID="..." AWS_SECRET_ACCESS_KEY="..." npm run deploy`.
+
+1. Install dependencies with `npm install`
+2. Ensure you have AWS Vault setup and configured with your AWS account.
+3. Generate an AWS access key and run `aws-vault add [profile name]`.
+4. Run `aws-vault exec [profile name] -- aws s3 ls` to validate your profile is setup correctly.
+5. Run `aws-vault exec [profile name] -- npm run deployPreprod` to deploy preprod
+6. Run `aws-vault exec [profile name] -- npm run deploy` to deploy prod
+
+You may need to disable caching in your CDN to ensure the new version is shown.
 
 ## Running Locally
 Run a local web server and visit the index page. This will expect the JSON files from the fetcher to be in the root directory.

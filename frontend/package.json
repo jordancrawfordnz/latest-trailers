@@ -6,10 +6,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "s3-deploy": "^0.7.3"
+    "s3-deploy": "^1.4.0"
   },
   "scripts": {
-    "deployPreprod": "s3-deploy '{index.html,assets/**}' --region ap-southeast-2 --bucket latesttrailerstest",
+    "deployPreprod": "s3-deploy '{index.html,assets/**}' --region ap-southeast-2 --bucket preprod.latesttrailers.net",
     "deploy": "s3-deploy '{index.html,assets/**}' --region us-west-1 --bucket latesttrailers.net"
   }
 }
