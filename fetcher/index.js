@@ -1,30 +1,20 @@
 var Promise = require('promise');
-var S3 = require('aws-sdk/clients/s3');
+const fs = require('fs');
 var tmp = require('tmp');
-var jsonfile = require('jsonfile');
 var moment = require('moment');
 var request = require('request');
 
 const FETCH_VIDEOS_DELAY = 400;
 
-if (process.argv.length !== 3) {
-  console.log('node index.js [config path]');
-  return;
-}
-
-var envFilePath = process.argv[2];
-var env = jsonfile.readFileSync(envFilePath);
-
-var s3Client = new S3({
-  accessKeyId: env.accessKeyId,
-  secretAccessKey: env.secretAccessKey,
-  region: env.region
-});
+var env = {
+  tmdbKey: process.env.FETCHER_TMDB_KEY,
+  fetcherSavePath: process.env.FETCHER_SAVE_PATH,
+  successPublishUrl: process.env.FETCHER_SUCCESS_PUBLISH_URL
+};
 
 const MovieDB = require('moviedb')(env.tmdbKey);
 
 var movieVideos = Promise.denodeify(MovieDB.movieVideos.bind(MovieDB));
-var putObject = Promise.denodeify(s3Client.putObject.bind(s3Client));
 
 function formatDateForTMDB(date) {
   return date.format('YYYY-MM-DD');
@@ -109,31 +99,32 @@ function loadMovieList(queryFunction) {
   });
 }
 
-function uploadToS3(content, filePath) {
-  var params = {
-    Body: JSON.stringify(content),
-    Key: filePath,
-    Bucket: env.bucket,
-    ContentType: 'application/json'
-  };
+function saveToFile(content, filePath) {
+  writeFile = Promise.denodeify(fs.writeFile);
 
-  return putObject(params);
+  return writeFile(filePath, JSON.stringify(content));
 }
 
 function uploadTrailerDetails(queryFunction, filename) {
   return loadMovieList(queryFunction).then(function(trailers) {
-    return uploadToS3(trailers, filename).then(function() {
-      console.log('Uploaded ' + filename + ' successfully!');
+    return saveToFile(trailers, filename).then(function() {
+      console.log('Saved ' + filename + ' successfully!');
     });
   });
 }
 
-uploadTrailerDetails(upcomingMovies, 'upcoming.json').then(function() {
-  return uploadTrailerDetails(nowPlayingMovies, 'now-showing.json').then(function() {
+function buildSavePath(filename) {
+  prefix = env.fetcherSavePath && env.fetcherSavePath.length > 0 ? env.fetcherSavePath + "/" : ""
+
+  return prefix + filename;
+}
+
+uploadTrailerDetails(upcomingMovies, buildSavePath('upcoming.json')).then(function() {
+  return uploadTrailerDetails(nowPlayingMovies, buildSavePath('now-showing.json')).then(function() {
     console.log('Fetch completed.');
 
-    if (env.successPublishUrl) {
-      console.log('Hitting success URL.');
+    if (env.successPublishUrl && env.successPublishUrl.length > 0) {
+      console.log('Hitting success URL ' + env.successPublishUrl);
       request(env.successPublishUrl);
     }
   });
