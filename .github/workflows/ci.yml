@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    # Run a build at 3am UTC every day
+    - cron:  '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  trigger-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Hit webhook
+      uses: fjogeleit/http-request-action@v1.8.1
+      with:
+        url: 'https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/4ed3ba4c-5cae-4ce2-9553-7fbdc322bc00'
+        method: 'POST'
