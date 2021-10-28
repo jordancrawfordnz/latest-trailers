@@ -1,0 +1,2 @@
+npm install --prefix fetcher
+FETCHER_SAVE_PATH=frontend node fetcher/index.js
