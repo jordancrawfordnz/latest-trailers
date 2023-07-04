@@ -13,7 +13,7 @@ Storage.prototype.getObject = function(key) {
 }
 
 function nowShowing() {
-  var url = 'now-showing.json';
+  var url = '/now-showing.json';
   var request = $.get(url);
 
   request.done(function(response) {
@@ -24,7 +24,7 @@ function nowShowing() {
 }
 
 function upcoming() {
-  var url = 'upcoming.json';
+  var url = '/upcoming.json';
   var request = $.get(url);
 
   request.done(function(response) {
@@ -121,7 +121,7 @@ function markTrailerAsSeen(movie) {
 }
 
 function onRouteChange(event) {
-  var url = location.hash.slice(1) || '/';
+  var url = location.pathname || '/';
   if (url === '/upcoming/') {
     upcoming();
   } else if (url === '/now-showing/') {
@@ -129,7 +129,7 @@ function onRouteChange(event) {
   } else if (url === '/about/') {
     about();
   } else {
-    history.replaceState(undefined, undefined, "#/upcoming/");
+    history.replaceState(undefined, undefined, '/upcoming/');
     upcoming();
   }
 }
