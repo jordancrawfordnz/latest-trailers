@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "moment": "^2.29.1",
-    "moviedb": "^0.2.7",
+    "moviedb": "^0.2.12",
     "promise": "^7.1.1",
     "request": "^2.83.0",
     "tmp": "0.0.31"
