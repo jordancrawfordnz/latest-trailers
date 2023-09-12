@@ -105,7 +105,7 @@ function saveToFile(content, filePath) {
   return writeFile(filePath, JSON.stringify(content));
 }
 
-function uploadTrailerDetails(queryFunction, filename) {
+function saveTrailerDetails(queryFunction, filename) {
   return loadMovieList(queryFunction).then(function(trailers) {
     return saveToFile(trailers, filename).then(function() {
       console.log('Saved ' + filename + ' successfully!');
@@ -119,8 +119,8 @@ function buildSavePath(filename) {
   return prefix + filename;
 }
 
-uploadTrailerDetails(upcomingMovies, buildSavePath('upcoming.json')).then(function() {
-  return uploadTrailerDetails(nowPlayingMovies, buildSavePath('now-showing.json')).then(function() {
+saveTrailerDetails(upcomingMovies, buildSavePath('upcoming.json')).then(function() {
+  return saveTrailerDetails(nowPlayingMovies, buildSavePath('now-showing.json')).then(function() {
     console.log('Fetch completed.');
 
     if (env.successPublishUrl && env.successPublishUrl.length > 0) {
