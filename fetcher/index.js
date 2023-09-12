@@ -1,8 +1,7 @@
 var Promise = require('promise');
 const fs = require('fs');
-var tmp = require('tmp');
 var moment = require('moment');
-var request = require('request');
+var https = require('https');
 
 const FETCH_VIDEOS_DELAY = 400;
 
@@ -125,7 +124,7 @@ saveTrailerDetails(upcomingMovies, buildSavePath('upcoming.json')).then(function
 
     if (env.successPublishUrl && env.successPublishUrl.length > 0) {
       console.log('Hitting success URL ' + env.successPublishUrl);
-      request(env.successPublishUrl);
+      https.get(env.successPublishUrl);
     }
   });
 }, function(error) {
