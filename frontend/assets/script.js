@@ -21,6 +21,7 @@ function nowShowing() {
     playRandomTrailer();
   });
   setActiveNavigation('nowShowingNav');
+  setTitle('Now Playing')
 }
 
 function upcoming() {
@@ -32,18 +33,24 @@ function upcoming() {
     playRandomTrailer();
   });
   setActiveNavigation('upcomingNav');
+  setTitle('Upcoming')
 }
 
 function about() {
   player.pauseVideo();
   setActiveNavigation('aboutNav');
   setDisplayState('about');
+  setTitle('About')
 };
 
 function setActiveNavigation(activeType) {
   var activeClass = 'active';
   $('.navigationItem').removeClass(activeClass);
   $('#' + activeType).addClass(activeClass);
+}
+
+function setTitle(title) {
+  $(document).prop('title', 'Latest Trailers - ' + title);
 }
 
 function setupPlayer(onReady) {
