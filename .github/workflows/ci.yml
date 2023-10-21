@@ -13,7 +13,5 @@ jobs:
 
     steps:
     - name: Hit webhook
-      uses: fjogeleit/http-request-action@v1.8.1
-      with:
-        url: ${{ secrets.DEPLOY_URL }}
-        method: 'POST'
+      run: |
+        curl -X POST "${{ secrets.DEPLOY_URL }}"
