@@ -25,22 +25,6 @@ If this is not provided, the current directory will be used instead.
 
 A success URL to hit if fetch happens successfully.
 
-## Config file
-Build a config file of the format:
-
-```
-{
-  "accessKeyId": "...",
-  "secretAccessKey": "...",
-  "region": "...",
-  "tmdbKey": "...",
-  "bucket": "...",
-  "successPublishUrl": "..."
-}
-```
-
-Optionally define a `successPublishUrl` to hit a URL after a successful fetch.
-
 ## Running
 1. Install Node
 2. Run `npm install`
