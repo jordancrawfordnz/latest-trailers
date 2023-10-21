@@ -15,5 +15,5 @@ jobs:
     - name: Hit webhook
       uses: fjogeleit/http-request-action@v1.8.1
       with:
-        url: 'https://api.cloudflare.com/client/v4/pages/webhooks/deploy_hooks/4ed3ba4c-5cae-4ce2-9553-7fbdc322bc00'
+        url: ${{ secrets.DEPLOY_URL }}
         method: 'POST'
