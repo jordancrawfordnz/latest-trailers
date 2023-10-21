@@ -7,6 +7,8 @@ I wanted to build something that is as close to the experience of watching movie
 
 Your browser keeps track of which trailers you've seen, so if you come back another time, rest assured you'll see something new!
 
+[Read more about how it works on my blog](https://jc.kiwi/latest-trailers/)
+
 ## Developement
 
 See [`fetcher`](fetcher) for the code which fetches trailers from TMDB.
