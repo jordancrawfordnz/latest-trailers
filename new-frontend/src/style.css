@@ -1,0 +1,31 @@
+body {
+  background-color: black;
+  font-family: sans-serif;
+  color: white;
+}
+
+#trailerContainer, #onNoRemainingTrailers {
+  height: calc(100% - 64px);
+}
+
+.nav-wrapper {
+  border-bottom: 1px solid #464646;
+}
+
+nav ul li a.active, nav ul a:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+#playOverride {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: auto;
+  margin-bottom: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 140px;
+  height: 60px;
+}
