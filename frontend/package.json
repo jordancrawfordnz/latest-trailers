@@ -1,0 +1,15 @@
+{
+  "name": "latest-trailers",
+  "version": "1.0.0",
+  "description": "## Purpose Automatically plays the latest / now showing movie trailers.",
+  "main": "index.js",
+  "dependencies": {
+    "moviedb-promise": "^4.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
