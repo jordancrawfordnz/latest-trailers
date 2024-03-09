@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import TrailerPlayer from '../TrailerPlayer'
 
 function UpcomingPage() {
   useEffect(() => {
@@ -6,9 +7,7 @@ function UpcomingPage() {
   })
 
   return (
-    <>
-      This is the upcoming component
-    </>
+    <TrailerPlayer />
   )
 }
 

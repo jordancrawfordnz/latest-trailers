@@ -36,22 +36,22 @@ function upcoming() {
   setTitle('Upcoming')
 }
 
-function about() {
-  player.pauseVideo();
-  setActiveNavigation('aboutNav');
-  setDisplayState('about');
-  setTitle('About')
-};
+// function about() {
+//   player.pauseVideo();
+//   setActiveNavigation('aboutNav');
+//   setDisplayState('about');
+//   setTitle('About')
+// };
 
-function setActiveNavigation(activeType) {
-  var activeClass = 'active';
-  $('.navigationItem').removeClass(activeClass);
-  $('#' + activeType).addClass(activeClass);
-}
+// function setActiveNavigation(activeType) {
+//   var activeClass = 'active';
+//   $('.navigationItem').removeClass(activeClass);
+//   $('#' + activeType).addClass(activeClass);
+// }
 
-function setTitle(title) {
-  $(document).prop('title', 'Latest Trailers - ' + title);
-}
+// function setTitle(title) {
+//   $(document).prop('title', 'Latest Trailers - ' + title);
+// }
 
 function setupPlayer(onReady) {
   player = new YT.Player('trailer', {

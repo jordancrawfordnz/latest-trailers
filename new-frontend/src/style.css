@@ -4,12 +4,24 @@ body {
   color: white;
 }
 
-#trailerContainer, #onNoRemainingTrailers {
-  height: calc(100% - 64px);
+#root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .nav-wrapper {
   border-bottom: 1px solid #464646;
+}
+
+#content {
+  flex-grow: 1;
+  display: flex;
+}
+
+.trailer-player__player {
+  flex-grow: 1;
+  overflow: hidden;
 }
 
 nav ul li a.active, nav ul a:hover {
